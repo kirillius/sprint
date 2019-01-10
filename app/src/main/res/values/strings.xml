@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Sprint</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="trello_token">1fd70618d3150a649ba6bdcaf8705e1be329dd719625987733f36e88b7369cac</string>
+    <string name="trello_key">e1db836c539627e7f45cf00153fce8d4</string>
+    <string name="trello_user">kirill140</string>
+    <string name="url_backend">https://api.trello.com/1/</string>
+
+    <!-- activities name -->
+    <string name="MainActivityTitle">Рабочий стол</string>
+    <string name="SettingsActivityTitle">Настройки</string>
+
+    <!-- main menu items -->
+    <string name="main_menu_item">Рабочий стол</string>
+    <string name="menu_settings">Настройки</string>
+
+    <!-- FragmentTodayTasks -->
+    <string name="tvTitleAnalytics">Аналитика</string>
+    <string name="tvTitleListTasks">Список задач</string>
+    <string name="tvNotChoiceSprint">Не выбран спринт</string>
+
+</resources>
