@@ -52,7 +52,7 @@ public class RequestHelper {
             e.printStackTrace();
         }
         request = CommonHelper.mapToString(params);
-        new ServerConnection().execute(context.getResources().getString(R.string.url_backend) + method+"/?"+request, request, "GET");
+        new ServerConnection().execute(context.getResources().getString(R.string.url_backend) + method, request, "GET");
     }
 
     private class ServerConnection extends AsyncTask<String, Void, String> {

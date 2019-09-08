@@ -7,8 +7,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="trello_token">1fd70618d3150a649ba6bdcaf8705e1be329dd719625987733f36e88b7369cac</string>
     <string name="trello_key">e1db836c539627e7f45cf00153fce8d4</string>
-    <string name="trello_user">kirill140</string>
-    <string name="url_backend">https://api.trello.com/1/</string>
+    <string name="trello_user">kirilliuskhv</string>
+    <!--<string name="url_backend">https://api.trello.com/1/</string>-->
+
+    <!-- basic values -->
+    <string name="url_backend">http://localhost:2900</string>
 
     <!-- activities name -->
     <string name="MainActivityTitle">Рабочий стол</string>
@@ -19,8 +22,27 @@
     <string name="menu_settings">Настройки</string>
 
     <!-- FragmentTodayTasks -->
-    <string name="tvTitleAnalytics">Аналитика</string>
+    <string name="tvTitleTodayTimeActivity">Всего сегодня времени активности</string>
     <string name="tvTitleListTasks">Список задач</string>
-    <string name="tvNotChoiceSprint">Не выбран спринт</string>
+    <string name="tvEmpty">Пока нет задач</string>
+    <string name="tvTitleTodayTimeLazy">Всего времени бездействия сегодня</string>
+    <string name="tvTitleTodayWorkActivity">Всего рабочего времени сегодня</string>
+
+    <!-- BasicSettingsFragment -->
+    <string name="etLogin">Имя пользователя</string>
+    <string name="etPassword">Пароль</string>
+
+    <!-- LabelsFragment -->
+    <string name="tvEmptyLabels">Пока нет меток</string>
+
+    <!--Dialogs -->
+    <string name="tvTitleDialog">Добавить</string>
+    <string name="btnOK">Сохранить</string>
+    <string name="btnCancel">Отмена</string>
+    <string name="nameLabel">Название метки</string>
+    <string name="nameTask">Название задачи</string>
+    <string name="descriptionTask">Описание задачи</string>
+    <string name="labelTask">Метка задачи</string>
+    <string name="deadlineTask">Дедлайн (в формате ДД.ММ.ГГГГ)</string>
 
 </resources>

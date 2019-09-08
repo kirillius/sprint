@@ -21,10 +21,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import ru.kirillius.sprint.R;
-import ru.kirillius.sprint.adapters.CardsAdapter;
+import ru.kirillius.sprint.adapters.TasksAdapter;
 import ru.kirillius.sprint.decorators.SimpleDividerItemDecoration;
 import ru.kirillius.sprint.interfaces.OnCompleteRequest;
-import ru.kirillius.sprint.models.TrelloCard;
+import ru.kirillius.sprint.models.Tasks;
 import ru.kirillius.sprint.service.RequestHelper;
 import ru.kirillius.sprint.service.UserInformationInPhone;
 
@@ -35,8 +35,8 @@ public class TodayTasksFragment extends Fragment {
     TextView tvNotChoiceSprint;
     RecyclerView rvListTasks;
     private RecyclerView.LayoutManager mLayoutManager;
-    ArrayList<TrelloCard> listItems;
-    CardsAdapter adapter;
+    ArrayList<Tasks> listItems;
+    TasksAdapter adapter;
     GsonBuilder builder = new GsonBuilder();
     Gson gson = builder.create();
 
@@ -60,10 +60,14 @@ public class TodayTasksFragment extends Fragment {
         listItems = new ArrayList<>();
         mLayoutManager = new LinearLayoutManager(getActivity());
         rvListTasks.setLayoutManager(mLayoutManager);
-        //rvListTasks.setHasFixedSize(true);
         rvListTasks.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
-        if(userInformationInPhone.getCurrentSprint()!=null) {
+        adapter = new TasksAdapter(getActivity(), listItems);
+        rvListTasks.setAdapter(adapter);
+        tvNotChoiceSprint.setVisibility(View.GONE);
+        rvListTasks.setVisibility(View.VISIBLE);
+
+        /*if(userInformationInPhone.getCurrentSprint()!=null) {
             String method = "boards/" + userInformationInPhone.getCurrentSprint() + "/cards";
             new RequestHelper(getActivity()).executeGetRequest(method, null, new OnCompleteRequest() {
                 @Override
@@ -74,17 +78,10 @@ public class TodayTasksFragment extends Fragment {
                     rvListTasks.setAdapter(adapter);
                     tvNotChoiceSprint.setVisibility(View.GONE);
 
-                    /*ConstraintLayout.LayoutParams params = new
-                            ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-                    // Set the height by params
-                    params.height=70*listItems.size();
-                    // set height of RecyclerView
-                    rvListTasks.setLayoutParams(params);*/
                     rvListTasks.setVisibility(View.VISIBLE);
                 }
             });
-        }
+        }*/
         return view;
     }
 
@@ -100,5 +97,16 @@ public class TodayTasksFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+    }
+
+    public void addLabelToList(Tasks task) {
+        listItems.add(task);
+        adapter.notifyDataSetChanged();
+    }
+
+    public void editLabelToList(Tasks task) {
+        int indexEditedLabel = listItems.indexOf(task);
+        listItems.set(indexEditedLabel, task);
+        adapter.notifyDataSetChanged();
     }
 }

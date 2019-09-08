@@ -1,6 +1,7 @@
 package ru.kirillius.sprint.activities;
 
 import android.content.Context;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -17,21 +18,25 @@ import java.util.List;
 
 import ru.kirillius.sprint.R;
 import ru.kirillius.sprint.activities.fragments.BasicSettingsFragment;
-import ru.kirillius.sprint.activities.fragments.CurrentSprintChoiceFragment;
-import ru.kirillius.sprint.interfaces.OnSelectSprint;
-import ru.kirillius.sprint.models.Sprint;
+import ru.kirillius.sprint.activities.fragments.LabelsFragment;
+import ru.kirillius.sprint.interfaces.OnCompleteAction;
+import ru.kirillius.sprint.interfaces.OnSaveLabel;
+import ru.kirillius.sprint.interfaces.OnSelectLabel;
+import ru.kirillius.sprint.models.Labels;
 import ru.kirillius.sprint.service.CommonHelper;
+import ru.kirillius.sprint.service.NotificationsHelper;
 import ru.kirillius.sprint.service.UserInformationInPhone;
 
-public class SettingsActivity extends AppCompatActivity implements OnSelectSprint {
+public class SettingsActivity extends AppCompatActivity implements OnSelectLabel {
 
     Context context;
     BasicSettingsFragment basicSettingsFragment;
-    CurrentSprintChoiceFragment currentSprintChoiceFragment;
+    LabelsFragment labelsFragment;
     ViewPager vpMainActivity;
     TabLayout tabLayout;
     ViewPagerAdapter adapterVP;
     UserInformationInPhone userInformationInPhone;
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +57,26 @@ public class SettingsActivity extends AppCompatActivity implements OnSelectSprin
 
         context = SettingsActivity.this;
         basicSettingsFragment = new BasicSettingsFragment();
-        currentSprintChoiceFragment = new CurrentSprintChoiceFragment();
+        labelsFragment = new LabelsFragment();
+        fab = findViewById(R.id.fab);
+        fab.hide();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotificationsHelper.DialogLabel(context, getLayoutInflater(), "Создание метки", null, new OnSaveLabel() {
+                    @Override
+                    public void onSaveLabel(Labels label) {
+                        labelsFragment.addLabelToList(label);
+                    }
+
+                    @Override
+                    public void onNotSaveLabel() {
+
+                    }
+                });
+            }
+        });
 
         vpMainActivity = (ViewPager) findViewById(R.id.vpSettingsActivity);
         setupViewPager(vpMainActivity);
@@ -70,14 +94,50 @@ public class SettingsActivity extends AppCompatActivity implements OnSelectSprin
     private void setupViewPager(ViewPager viewPager) {
         adapterVP = new ViewPagerAdapter(getSupportFragmentManager());
         adapterVP.addFragment(basicSettingsFragment, "Основные настройки");
-        adapterVP.addFragment(currentSprintChoiceFragment, "Текущий спринт");
+        adapterVP.addFragment(labelsFragment, "Метки");
         viewPager.setAdapter(adapterVP);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        fab.hide();
+                        break;
+                    case 1:
+                        fab.show();
+                        break;
+                    default:
+                        fab.hide();
+                        break;
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
-    public void onSelectSprint(Sprint currentSprint) {
-        userInformationInPhone.setCurrentSprint(currentSprint.id);
-        Toast.makeText(context, "Спринт успешно выбран", Toast.LENGTH_SHORT).show();
+    public void onSelectLabel(Labels label) {
+        NotificationsHelper.DialogLabel(context, getLayoutInflater(), "Редактирование метки", label, new OnSaveLabel() {
+            @Override
+            public void onSaveLabel(Labels label) {
+                labelsFragment.editLabelToList(label);
+            }
+
+            @Override
+            public void onNotSaveLabel() {
+
+            }
+        });
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {

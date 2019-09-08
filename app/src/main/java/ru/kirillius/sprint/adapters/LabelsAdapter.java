@@ -5,45 +5,42 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import ru.kirillius.sprint.R;
-import ru.kirillius.sprint.interfaces.OnSelectSprint;
-import ru.kirillius.sprint.models.Sprint;
+import ru.kirillius.sprint.interfaces.OnSelectLabel;
+import ru.kirillius.sprint.models.Labels;
 import ru.kirillius.sprint.service.UserInformationInPhone;
 
-public class SprintsAdapter extends RecyclerView.Adapter<SprintsAdapter.ViewHolder> {
+public class LabelsAdapter extends RecyclerView.Adapter<LabelsAdapter.ViewHolder> {
     Context context;
-    private ArrayList<Sprint> listItem;
+    private ArrayList<Labels> listItem;
     UserInformationInPhone userInformationInPhone;
+    OnSelectLabel listener;
 
-    public SprintsAdapter(Context context, ArrayList<Sprint> listItem) {
+    public LabelsAdapter(Context context, ArrayList<Labels> listItem) {
         this.context=context;
         this.listItem=listItem;
+        this.listener = (OnSelectLabel)context;
         userInformationInPhone = new UserInformationInPhone(context);
     }
 
     @Override
-    public SprintsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public LabelsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(context)
                 .inflate(R.layout.simple_list_item, parent, false);
 
-        SprintsAdapter.ViewHolder vh = new SprintsAdapter.ViewHolder(v, context);
+        LabelsAdapter.ViewHolder vh = new LabelsAdapter.ViewHolder(v, context);
         return vh;
     }
 
     @Override
-    public void onBindViewHolder(final SprintsAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final LabelsAdapter.ViewHolder holder, final int position) {
 
         holder.setItem(listItem.get(position));
         holder.tvName.setText(listItem.get(position).name);
-
-        if(userInformationInPhone.getCurrentSprint()!=null)
-            if(userInformationInPhone.getCurrentSprint().equals(listItem.get(position).id))
-                holder.ivCheck.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -63,26 +60,23 @@ public class SprintsAdapter extends RecyclerView.Adapter<SprintsAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tvName;
-        ImageView ivCheck;
-        private Sprint item;
-        OnSelectSprint listener;
+        private Labels item;
+        OnSelectLabel listener;
 
         public ViewHolder(View v, Context context) {
             super(v);
             tvName = v.findViewById(R.id.tvName);
-            ivCheck = v.findViewById(R.id.ivCurrentSprint);
-            this.listener = (OnSelectSprint)context;
+            this.listener = (OnSelectLabel) context;
             v.setOnClickListener(this);
         }
 
-        public void setItem(Sprint item) {
+        public void setItem(Labels item) {
             this.item = item;
         }
 
         @Override
-        public void onClick(View view) {
-            ivCheck.setVisibility(View.VISIBLE);
-            listener.onSelectSprint(item);
+        public void onClick(View v) {
+            listener.onSelectLabel(item);
         }
     }
 }

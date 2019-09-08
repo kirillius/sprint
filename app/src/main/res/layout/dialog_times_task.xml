@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tvTitleDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tvTitleDialog"
+        android:textSize="17sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:id="@+id/tvNameTask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="15dp"
+        android:textColor="@color/black"
+        android:layout_below="@id/tvTitleDialog"/>
+
+    <TextView
+        android:id="@+id/tvDescriptionTask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="15dp"
+        android:textColor="@color/black"
+        android:layout_below="@id/tvNameTask"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2"
+        android:layout_below="@id/tvDescriptionTask"
+        android:layout_alignParentEnd="true"
+        android:orientation="horizontal"
+        android:layout_margin="20dp">
+
+        <Button
+            android:id="@+id/btnStartStopTask"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:text="@string/btnCancel"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
