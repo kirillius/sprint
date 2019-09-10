@@ -18,8 +18,16 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ru.kirillius.sprint.R;
@@ -27,12 +35,14 @@ import ru.kirillius.sprint.activities.fragments.AnalyticsFragment;
 import ru.kirillius.sprint.activities.fragments.ScheduleEventFragment;
 import ru.kirillius.sprint.activities.fragments.TodayTasksFragment;
 import ru.kirillius.sprint.interfaces.OnCompleteAction;
+import ru.kirillius.sprint.interfaces.OnCompleteRequest;
 import ru.kirillius.sprint.interfaces.OnSaveTask;
 import ru.kirillius.sprint.interfaces.OnSaveTimesTask;
 import ru.kirillius.sprint.interfaces.OnSelectTask;
 import ru.kirillius.sprint.models.Tasks;
 import ru.kirillius.sprint.service.CommonHelper;
 import ru.kirillius.sprint.service.NotificationsHelper;
+import ru.kirillius.sprint.service.RequestHelper;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnSelectTask {
 
@@ -44,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     TabLayout tabLayout;
     ViewPagerAdapter adapterVP;
     FloatingActionButton fab;
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +80,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 NotificationsHelper.DialogTask(context, getLayoutInflater(), "Создание задачи", null, new OnSaveTask() {
                     @Override
                     public void onSaveTask(Tasks task) {
-                        todayTasksFragment.addLabelToList(task);
+                        RequestHelper requestHelper = new RequestHelper(context);
+                        requestHelper.executePostRequest("/api/tasks",  gson.toJson(task), new OnCompleteRequest() {
+                            @Override
+                            public void onComplete(String json) {
+                                todayTasksFragment.addLabelToList(gson.fromJson(json, Tasks.class));
+                            }
+                        });
                     }
 
                     @Override
@@ -153,12 +171,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onSelectTask(Tasks task) {
+    public void onSelectTask(final Tasks task) {
         //запросим с сервера информацию о статусе задачи (в работе или нет)
-        NotificationsHelper.DialogTimes(context, getLayoutInflater(), "Время работы над задачей", task, false, new OnSaveTimesTask() {
+        RequestHelper requestHelper = new RequestHelper(context);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("taskId", String.valueOf(task.id));
+        requestHelper.executeGetRequest("/api/getStatusTask?"+CommonHelper.mapToString(params), params , new OnCompleteRequest() {
             @Override
-            public void onSaveTimesTask(Tasks task, boolean start) {
-                //отправим данные на сервер
+            public void onComplete(String json) {
+                JSONObject result = null;
+                try {
+                    result = new JSONObject(json);
+                    boolean startFlag = result.get("status").equals("taskStoped");
+                    NotificationsHelper.DialogTimes(context, getLayoutInflater(), "Время работы над задачей", task, startFlag, new OnSaveTimesTask() {
+                        @Override
+                        public void onSaveTimesTask(final Tasks task, final boolean start) {
+                            //отправим данные на сервер
+                            RequestHelper requestHelper = new RequestHelper(context);
+                            HashMap<String, String> params = new HashMap<>();
+                            params.put("taskId", String.valueOf(task.id));
+                            params.put("start", String.valueOf(start));
+                            requestHelper.executeGetRequest("/api/startStopTask?"+CommonHelper.mapToString(params), params , new OnCompleteRequest() {
+                                @Override
+                                public void onComplete(String json) {
+                                    String message = start ? "Задача успешно начата" : "Задача успешно закончена";
+                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -168,7 +212,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NotificationsHelper.DialogTask(context, getLayoutInflater(), "Редактирование задачи", task, new OnSaveTask() {
             @Override
             public void onSaveTask(Tasks task) {
-                todayTasksFragment.editLabelToList(task);
+                RequestHelper requestHelper = new RequestHelper(context);
+                requestHelper.executePutRequest("/api/tasks/"+task.id,  gson.toJson(task), new OnCompleteRequest() {
+                    @Override
+                    public void onComplete(String json) {
+                        todayTasksFragment.editLabelToList(gson.fromJson(json, Tasks.class));
+                    }
+                });
             }
 
             @Override

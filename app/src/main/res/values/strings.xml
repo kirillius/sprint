@@ -8,10 +8,9 @@
     <string name="trello_token">1fd70618d3150a649ba6bdcaf8705e1be329dd719625987733f36e88b7369cac</string>
     <string name="trello_key">e1db836c539627e7f45cf00153fce8d4</string>
     <string name="trello_user">kirilliuskhv</string>
-    <!--<string name="url_backend">https://api.trello.com/1/</string>-->
 
     <!-- basic values -->
-    <string name="url_backend">http://localhost:2900</string>
+    <string name="url_backend">http://185.158.153.107:2900</string>
 
     <!-- activities name -->
     <string name="MainActivityTitle">Рабочий стол</string>

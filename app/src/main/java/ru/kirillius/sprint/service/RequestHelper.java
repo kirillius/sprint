@@ -37,8 +37,15 @@ public class RequestHelper {
 
     public void executePostRequest(String method, String body, OnCompleteRequest listener) {
         this.listener = listener;
-        request = "";//"{\"startRecord\":1,\"recordCount\":1000,\"orderBy\":\"ID\",\"orderDir\":\"ASC\",\"filters\":["+filters+"]}";
-        new ServerConnection().execute(context.getResources().getString(R.string.url_backend) + method, "POST");
+        request = "";
+        new ServerConnection().execute(context.getResources().getString(R.string.url_backend) + method, body, "POST");
+    }
+
+    public void executePutRequest(String method, String body, OnCompleteRequest listener) {
+        System.out.println("method: "+method);
+        this.listener = listener;
+        request = "";
+        new ServerConnection().execute(context.getResources().getString(R.string.url_backend) + method, body, "PUT");
     }
 
     public void executeGetRequest(String method, HashMap<String, String> params, OnCompleteRequest listener) {
@@ -46,11 +53,11 @@ public class RequestHelper {
         if(params==null)
             params = new HashMap<>();
 
-        try {
+        /*try {
             params.putAll(CommonHelper.getAuth(context));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        }
+        }*/
         request = CommonHelper.mapToString(params);
         new ServerConnection().execute(context.getResources().getString(R.string.url_backend) + method, request, "GET");
     }

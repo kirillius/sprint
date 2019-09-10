@@ -62,26 +62,24 @@ public class TodayTasksFragment extends Fragment {
         rvListTasks.setLayoutManager(mLayoutManager);
         rvListTasks.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
-        adapter = new TasksAdapter(getActivity(), listItems);
+        /*adapter = new TasksAdapter(getActivity(), listItems);
         rvListTasks.setAdapter(adapter);
         tvNotChoiceSprint.setVisibility(View.GONE);
-        rvListTasks.setVisibility(View.VISIBLE);
+        rvListTasks.setVisibility(View.VISIBLE);*/
 
-        /*if(userInformationInPhone.getCurrentSprint()!=null) {
-            String method = "boards/" + userInformationInPhone.getCurrentSprint() + "/cards";
-            new RequestHelper(getActivity()).executeGetRequest(method, null, new OnCompleteRequest() {
-                @Override
-                public void onComplete(String json) {
-                    Type listType = new TypeToken<ArrayList<TrelloCard>>(){}.getType();
-                    listItems = gson.fromJson(json, listType);
-                    adapter = new CardsAdapter(getActivity(), listItems);
-                    rvListTasks.setAdapter(adapter);
-                    tvNotChoiceSprint.setVisibility(View.GONE);
+        new RequestHelper(getActivity()).executeGetRequest("/api/tasks", null, new OnCompleteRequest() {
+            @Override
+            public void onComplete(String json) {
+                Type listType = new TypeToken<ArrayList<Tasks>>(){}.getType();
+                listItems = gson.fromJson(json, listType);
+                adapter = new TasksAdapter(getActivity(), listItems);
+                rvListTasks.setAdapter(adapter);
+                tvNotChoiceSprint.setVisibility(View.GONE);
 
-                    rvListTasks.setVisibility(View.VISIBLE);
-                }
-            });
-        }*/
+                rvListTasks.setVisibility(View.VISIBLE);
+            }
+        });
+
         return view;
     }
 

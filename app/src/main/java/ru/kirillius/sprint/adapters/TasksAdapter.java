@@ -31,7 +31,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     @Override
     public TasksAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(context)
-                .inflate(R.layout.simple_list_item, parent, false);
+                .inflate(R.layout.list_task_item, parent, false);
 
         TasksAdapter.ViewHolder vh = new TasksAdapter.ViewHolder(v, context);
         return vh;
@@ -42,6 +42,7 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
 
         holder.setItem(listItem.get(position));
         holder.tvName.setText(listItem.get(position).name);
+        holder.tvDescription.setText(listItem.get(position).description);
     }
 
     @Override
@@ -60,15 +61,14 @@ public class TasksAdapter extends RecyclerView.Adapter<TasksAdapter.ViewHolder> 
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        TextView tvName, tvDescription, tvDeadline;
+        TextView tvName, tvDescription;
         private Tasks item;
         OnSelectTask listener;
 
         public ViewHolder(View v, Context context) {
             super(v);
-            tvName = v.findViewById(R.id.tvName);
-            //tvDescription = v.findViewById(R.id.tvDescription);
-            //tvDeadline = v.findViewById(R.id.tvDeadline);
+            tvName = v.findViewById(R.id.tvNameTask);
+            tvDescription = v.findViewById(R.id.tvDescriptionTask);
             this.listener = (OnSelectTask) context;
             v.setOnClickListener(this);
             v.setOnLongClickListener(this);

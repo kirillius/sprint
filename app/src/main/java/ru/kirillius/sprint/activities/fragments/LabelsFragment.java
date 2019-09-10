@@ -63,7 +63,7 @@ public class LabelsFragment extends Fragment {
         rvListLabels.addItemDecoration(new SimpleDividerItemDecoration(getActivity()));
 
         requestHelper = new RequestHelper(context);
-        listItems.add(new Labels(1, "Интерсол"));
+        /*listItems.add(new Labels(1, "Интерсол"));
         listItems.add(new Labels(2, "Е2"));
         listItems.add(new Labels(3, "Наука"));
         listItems.add(new Labels(4, "Личные проекты"));
@@ -71,8 +71,8 @@ public class LabelsFragment extends Fragment {
         adapter = new LabelsAdapter(getActivity(), listItems);
         rvListLabels.setAdapter(adapter);
         tvEmpty.setVisibility(View.GONE);
-        rvListLabels.setVisibility(View.VISIBLE);
-        /*requestHelper.executeGetRequest("/api/labels", null , new OnCompleteRequest() {
+        rvListLabels.setVisibility(View.VISIBLE);*/
+        requestHelper.executeGetRequest("/api/labels", null , new OnCompleteRequest() {
             @Override
             public void onComplete(String json) {
                 Type listType = new TypeToken<ArrayList<Labels>>(){}.getType();
@@ -85,7 +85,7 @@ public class LabelsFragment extends Fragment {
                     rvListLabels.setVisibility(View.VISIBLE);
                 }
             }
-        });*/
+        });
         return view;
     }
 

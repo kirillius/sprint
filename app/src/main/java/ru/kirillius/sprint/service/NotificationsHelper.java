@@ -12,8 +12,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 import ru.kirillius.sprint.R;
+import ru.kirillius.sprint.adapters.LabelsAdapter;
 import ru.kirillius.sprint.interfaces.OnCompleteAction;
+import ru.kirillius.sprint.interfaces.OnCompleteRequest;
 import ru.kirillius.sprint.interfaces.OnSaveLabel;
 import ru.kirillius.sprint.interfaces.OnSaveTask;
 import ru.kirillius.sprint.interfaces.OnSaveTimesTask;
@@ -90,14 +100,14 @@ public class NotificationsHelper {
         }
     }
 
-    public static void DialogTask(Context context, LayoutInflater inflater, String title, final Tasks task, final OnSaveTask listener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    public static void DialogTask(final Context context, LayoutInflater inflater, String title, final Tasks task, final OnSaveTask listener) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        View viewDialog = inflater.inflate(R.layout.dialog_tasks, null);
+        final View viewDialog = inflater.inflate(R.layout.dialog_tasks, null);
         TextView tvTitleDialog;
         final AppCompatEditText name, description, deadline;
-        Button btnOk, btnCancel;
-        Spinner spLabel = viewDialog.findViewById(R.id.label);
+        final Button btnOk, btnCancel;
+        final Spinner spLabel = viewDialog.findViewById(R.id.label);
 
         tvTitleDialog = viewDialog.findViewById(R.id.tvTitleDialog);
         btnOk = viewDialog.findViewById(R.id.btnOk);
@@ -115,64 +125,80 @@ public class NotificationsHelper {
             deadline.setText(task.deadline);
         }
 
-        String[] labels = new String[]{"Интерсол", "Е2", "Наука", "Личные проекты"};
-        ArrayAdapter<String> adapter = new  ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spLabel.setAdapter(adapter);
-
-        spLabel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent,
-                                       View itemSelected, int selectedItemPosition, long selectedId) {
-            }
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        builder.setView(viewDialog);
-        final AlertDialog dialog = builder.create();
-        btnOk.setOnClickListener(new View.OnClickListener() {
+        RequestHelper requestHelper = new RequestHelper(context);
+        requestHelper.executeGetRequest("/api/labels", null , new OnCompleteRequest() {
             @Override
-            public void onClick(View view) {
-                if (listener != null) {
-                    Tasks savedTask = new Tasks(1, 1, "Первая задача", "Здесь описание задачи", null);
-                    if(task!=null) {
-                        savedTask = task;
-                        savedTask.name = name.getText().toString();
-                        savedTask.description = description.getText().toString();
-                        savedTask.deadline = deadline.getText().toString();
-                        savedTask.labelId = 1;
+            public void onComplete(String json) {
+                GsonBuilder builderGson = new GsonBuilder();
+                Gson gson = builderGson.create();
+                Type listType = new TypeToken<ArrayList<Labels>>(){}.getType();
+                ArrayList<Labels> listItems = gson.fromJson(json, listType);
 
+                String[] labels = new String[listItems.size()];
+                int i=0;
+                for(Labels label: listItems) {
+                    labels[i] = label.name;
+                    i++;
+                }
+
+                ArrayAdapter<String> adapter = new  ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, labels);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spLabel.setAdapter(adapter);
+
+                spLabel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    public void onItemSelected(AdapterView<?> parent,
+                                               View itemSelected, int selectedItemPosition, long selectedId) {
                     }
-                    listener.onSaveTask(savedTask);
-                    dialog.dismiss();
-                } else
-                    dialog.dismiss();
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+
+                builder.setView(viewDialog);
+                final AlertDialog dialog = builder.create();
+                btnOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (listener != null) {
+                            Tasks savedTask = new Tasks();
+                            if(task!=null) {
+                                savedTask = task;
+                            }
+                            savedTask.name = name.getText().toString();
+                            savedTask.description = description.getText().toString();
+                            savedTask.deadline = deadline.getText().toString();
+                            savedTask.labelId = 1;
+                            listener.onSaveTask(savedTask);
+                            dialog.dismiss();
+                        } else
+                            dialog.dismiss();
+                    }
+                });
+
+                btnCancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (listener != null) {
+                            listener.onNotSaveTask();
+                            dialog.dismiss();
+                        } else
+                            dialog.dismiss();
+                    }
+                });
+
+                dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        if (listener != null)
+                            listener.onNotSaveTask();
+                    }
+                });
+
+                if(!((Activity) context).isFinishing())
+                {
+                    dialog.show();
+                }
             }
         });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (listener != null) {
-                    listener.onNotSaveTask();
-                    dialog.dismiss();
-                } else
-                    dialog.dismiss();
-            }
-        });
-
-        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialogInterface) {
-                if (listener != null)
-                    listener.onNotSaveTask();
-            }
-        });
-
-        if(!((Activity) context).isFinishing())
-        {
-            dialog.show();
-        }
     }
 
     public static void DialogTimes(Context context, LayoutInflater inflater, String title, final Tasks task, final boolean start, final OnSaveTimesTask listener) {

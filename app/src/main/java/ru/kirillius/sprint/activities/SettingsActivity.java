@@ -13,6 +13,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,11 +23,13 @@ import ru.kirillius.sprint.R;
 import ru.kirillius.sprint.activities.fragments.BasicSettingsFragment;
 import ru.kirillius.sprint.activities.fragments.LabelsFragment;
 import ru.kirillius.sprint.interfaces.OnCompleteAction;
+import ru.kirillius.sprint.interfaces.OnCompleteRequest;
 import ru.kirillius.sprint.interfaces.OnSaveLabel;
 import ru.kirillius.sprint.interfaces.OnSelectLabel;
 import ru.kirillius.sprint.models.Labels;
 import ru.kirillius.sprint.service.CommonHelper;
 import ru.kirillius.sprint.service.NotificationsHelper;
+import ru.kirillius.sprint.service.RequestHelper;
 import ru.kirillius.sprint.service.UserInformationInPhone;
 
 public class SettingsActivity extends AppCompatActivity implements OnSelectLabel {
@@ -37,6 +42,8 @@ public class SettingsActivity extends AppCompatActivity implements OnSelectLabel
     ViewPagerAdapter adapterVP;
     UserInformationInPhone userInformationInPhone;
     FloatingActionButton fab;
+    GsonBuilder builder = new GsonBuilder();
+    Gson gson = builder.create();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +74,13 @@ public class SettingsActivity extends AppCompatActivity implements OnSelectLabel
                 NotificationsHelper.DialogLabel(context, getLayoutInflater(), "Создание метки", null, new OnSaveLabel() {
                     @Override
                     public void onSaveLabel(Labels label) {
-                        labelsFragment.addLabelToList(label);
+                        RequestHelper requestHelper = new RequestHelper(context);
+                        requestHelper.executePostRequest("/api/labels",  gson.toJson(label), new OnCompleteRequest() {
+                            @Override
+                            public void onComplete(String json) {
+                                labelsFragment.addLabelToList(gson.fromJson(json, Labels.class));
+                            }
+                        });
                     }
 
                     @Override
@@ -130,7 +143,13 @@ public class SettingsActivity extends AppCompatActivity implements OnSelectLabel
         NotificationsHelper.DialogLabel(context, getLayoutInflater(), "Редактирование метки", label, new OnSaveLabel() {
             @Override
             public void onSaveLabel(Labels label) {
-                labelsFragment.editLabelToList(label);
+                RequestHelper requestHelper = new RequestHelper(context);
+                requestHelper.executePutRequest("/api/labels/"+label.id,  gson.toJson(label), new OnCompleteRequest() {
+                    @Override
+                    public void onComplete(String json) {
+                        labelsFragment.editLabelToList(gson.fromJson(json, Labels.class));
+                    }
+                });
             }
 
             @Override
